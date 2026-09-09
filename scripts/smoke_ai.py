@@ -4,11 +4,11 @@ import argparse
 import sys
 from pathlib import Path
 
-from resume_cli.ai import extract_resume, score_resume
-from resume_cli.config import Settings
-from resume_cli.errors import ResumeError
-from resume_cli.files import parse_document, read_jd
-from resume_cli.prompts import PROMPT_VERSION
+from resume_cli.adapters.config import Settings
+from resume_cli.adapters.documents import parse_document, read_jd
+from resume_cli.adapters.prompts import PROMPT_VERSION
+from resume_cli.application.resumes import extract_resume, score_resume
+from resume_cli.domain.errors import ResumeError
 
 ROOT = Path(__file__).resolve().parents[1]
 

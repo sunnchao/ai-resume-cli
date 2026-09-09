@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from resume_cli.errors import ResumeError
+from resume_cli.domain.errors import ResumeError
 
 OCR_TIMEOUT = 30
 OCR_DPI = 200

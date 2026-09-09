@@ -13,8 +13,8 @@ from pydantic import (
     field_validator,
 )
 
-from resume_cli.documents import ParsedDocument, locate_quote
-from resume_cli.errors import ResumeError
+from resume_cli.domain.documents import ParsedDocument, locate_quote
+from resume_cli.domain.errors import ResumeError
 
 
 def _nullable_text(value: Any) -> Any:

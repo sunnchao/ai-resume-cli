@@ -1,7 +1,7 @@
 import pytest
 
-from resume_cli.config import Settings
-from resume_cli.errors import ResumeError
+from resume_cli.adapters.config import Settings
+from resume_cli.domain.errors import ResumeError
 
 
 def test_missing_config():

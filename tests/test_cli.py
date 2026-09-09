@@ -6,7 +6,7 @@ from typer.testing import CliRunner
 
 from resume_cli import cli
 from resume_cli.cli import app
-from resume_cli.errors import ResumeError
+from resume_cli.domain.errors import ResumeError
 
 runner = CliRunner()
 PROJECT = Path(__file__).resolve().parents[1]

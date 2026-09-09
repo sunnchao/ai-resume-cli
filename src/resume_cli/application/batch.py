@@ -2,45 +2,14 @@
 
 from collections.abc import Callable, Sequence
 from pathlib import Path
-from typing import Annotated, Literal
 
-from pydantic import Field
-
-from resume_cli.ai import extract_resume, score_resume
-from resume_cli.config import Settings
-from resume_cli.errors import ResumeError
-from resume_cli.files import parse_document, read_jd
-from resume_cli.schemas import DetailedScoreResult, Resume, ScoreResult, StrictModel
+from resume_cli.adapters.config import Settings
+from resume_cli.adapters.documents import parse_document, read_jd
+from resume_cli.application.resumes import extract_resume, score_resume
+from resume_cli.domain.batch import BatchError, BatchFailure, BatchReport, BatchSuccess, Operation
+from resume_cli.domain.errors import ResumeError
 
 MAX_BATCH_FILES = 20
-Operation = Literal["extract", "score"]
-
-
-class BatchError(StrictModel):
-    code: str
-    message: str
-    exit_code: int
-
-
-class BatchSuccess(StrictModel):
-    file: str
-    status: Literal["success"] = "success"
-    result: Resume | DetailedScoreResult | ScoreResult
-
-
-class BatchFailure(StrictModel):
-    file: str
-    status: Literal["error"] = "error"
-    error: BatchError
-
-
-class BatchReport(StrictModel):
-    operation: Operation
-    mode: Literal["mock", "ai"]
-    total: int
-    succeeded: int
-    failed: int
-    results: list[Annotated[BatchSuccess | BatchFailure, Field(discriminator="status")]]
 
 
 def run_batch(

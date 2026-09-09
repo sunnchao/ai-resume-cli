@@ -1,6 +1,6 @@
 import json
 
-from resume_cli.prompts import (
+from resume_cli.adapters.prompts import (
     EVIDENCE_SCORE_EXAMPLES,
     EXTRACT_EXAMPLES,
     FEW_SHOT_BOUNDARY,
@@ -9,7 +9,7 @@ from resume_cli.prompts import (
     extract_messages,
     score_messages,
 )
-from resume_cli.schemas import (
+from resume_cli.domain.schemas import (
     EvidenceScoreAssessment,
     Resume,
     ScoreAssessment,

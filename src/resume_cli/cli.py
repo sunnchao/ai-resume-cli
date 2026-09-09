@@ -7,8 +7,8 @@ from typing import Annotated
 import typer
 
 from resume_cli import __version__
-from resume_cli.errors import ResumeError
-from resume_cli.schemas import StrictModel
+from resume_cli.domain.errors import ResumeError
+from resume_cli.domain.schemas import StrictModel
 
 app = typer.Typer(
     help="读取 PDF 简历，提取结构化信息，并结合岗位描述评分。",
@@ -147,43 +147,43 @@ def score_command(
 
 
 def check_output_path(*args, **kwargs):
-    from resume_cli.files import check_output_path as impl
+    from resume_cli.adapters.storage import check_output_path as impl
 
     return impl(*args, **kwargs)
 
 
 def parse_document(*args, **kwargs):
-    from resume_cli.files import parse_document as impl
+    from resume_cli.adapters.documents import parse_document as impl
 
     return impl(*args, **kwargs)
 
 
 def read_jd(*args, **kwargs):
-    from resume_cli.files import read_jd as impl
+    from resume_cli.adapters.documents import read_jd as impl
 
     return impl(*args, **kwargs)
 
 
 def save_json(*args, **kwargs):
-    from resume_cli.files import save_json as impl
+    from resume_cli.adapters.storage import save_json as impl
 
     return impl(*args, **kwargs)
 
 
 def extract_resume(*args, **kwargs):
-    from resume_cli.ai import extract_resume as impl
+    from resume_cli.application.resumes import extract_resume as impl
 
     return impl(*args, **kwargs)
 
 
 def score_resume(*args, **kwargs):
-    from resume_cli.ai import score_resume as impl
+    from resume_cli.application.resumes import score_resume as impl
 
     return impl(*args, **kwargs)
 
 
 def run_batch(*args, **kwargs):
-    from resume_cli.batch import run_batch as impl
+    from resume_cli.application.batch import run_batch as impl
 
     return impl(*args, **kwargs)
 

@@ -4,10 +4,10 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from resume_cli import batch
-from resume_cli.ai import extract_resume
+from resume_cli.application import batch
+from resume_cli.application.resumes import extract_resume
 from resume_cli.cli import app
-from resume_cli.errors import ResumeError
+from resume_cli.domain.errors import ResumeError
 
 runner = CliRunner()
 

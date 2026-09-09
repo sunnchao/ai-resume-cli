@@ -10,7 +10,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 
-from resume_cli.ai import extract_resume, score_resume
+from resume_cli.application.resumes import extract_resume, score_resume
 
 ROOT = Path(__file__).resolve().parents[1]
 

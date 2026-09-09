@@ -5,9 +5,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from resume_cli import ocr
-from resume_cli.errors import ResumeError
-from resume_cli.files import parse_document
+from resume_cli.adapters import ocr
+from resume_cli.adapters.documents import parse_document
+from resume_cli.domain.errors import ResumeError
 
 
 @pytest.fixture
@@ -134,7 +134,7 @@ def test_renderer_rejects_invalid_or_huge_page_before_allocating(monkeypatch, tm
 
 
 def test_parser_only_ocr_empty_pages_and_applies_character_limit(make_pdf, monkeypatch):
-    from resume_cli import files
+    from resume_cli.adapters import documents as files
 
     calls = []
 

@@ -7,7 +7,7 @@ from urllib.parse import urlsplit
 
 from dotenv import dotenv_values
 
-from resume_cli.errors import ResumeError
+from resume_cli.domain.errors import ResumeError
 
 REQUEST_TIMEOUT = 30.0
 RETRY_DELAY = 1.0

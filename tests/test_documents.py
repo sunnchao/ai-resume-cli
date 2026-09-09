@@ -5,11 +5,15 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
+from resume_cli.adapters.documents import parse_document, read_jd
 from resume_cli.cli import app
-from resume_cli.documents import ParsedDocument, TextPage, locate_quote
-from resume_cli.errors import ResumeError
-from resume_cli.files import parse_document, read_jd
-from resume_cli.schemas import EvidenceScoreAssessment, finalize_evidence_score, validate_json
+from resume_cli.domain.documents import ParsedDocument, TextPage, locate_quote
+from resume_cli.domain.errors import ResumeError
+from resume_cli.domain.schemas import (
+    EvidenceScoreAssessment,
+    finalize_evidence_score,
+    validate_json,
+)
 
 
 def inputs():
@@ -97,7 +101,7 @@ def test_jd_line_numbers_preserve_bom_blank_lines_and_crlf(tmp_path):
 
 
 def test_parse_pages_cli_and_no_ocr_on_text_pages(make_pdf, monkeypatch):
-    from resume_cli import files as file_module
+    from resume_cli.adapters import documents as file_module
 
     def forbidden(*args, **kwargs):
         pytest.fail("Native text pages must not invoke OCR")

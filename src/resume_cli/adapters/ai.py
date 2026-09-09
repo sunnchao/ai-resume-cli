@@ -1,38 +1,16 @@
-"""One Chat Completions request per command, with one explicit transient retry."""
+"""Chat Completions transport with one explicit transient retry."""
 
 import time
-from importlib.resources import files
 from typing import TypeVar
 
-from resume_cli.config import MAX_OUTPUT_TOKENS, REQUEST_TIMEOUT, RETRY_DELAY, Settings
-from resume_cli.documents import ParsedDocument, TextPage
-from resume_cli.errors import ResumeError
-from resume_cli.prompts import extract_messages, score_messages
-from resume_cli.schemas import (
-    DetailedScoreResult,
-    EvidenceScoreAssessment,
-    Resume,
-    ScoreAssessment,
-    ScoreResult,
-    StrictModel,
-    finalize_evidence_score,
-    finalize_score,
-    validate_json,
-)
+from resume_cli.adapters.config import MAX_OUTPUT_TOKENS, REQUEST_TIMEOUT, RETRY_DELAY, Settings
+from resume_cli.domain.errors import ResumeError
+from resume_cli.domain.schemas import StrictModel, validate_json
 
 Model = TypeVar("Model", bound=StrictModel)
 
 
-def _request(schema: type[Model], messages: list[dict[str, str]], *, mock: bool) -> Model:
-    if mock:
-        filename = {
-            Resume: "resume.json",
-            ScoreAssessment: "score-assessment.json",
-            EvidenceScoreAssessment: "evidence-score-assessment.json",
-        }[schema]
-        raw = files("resume_cli").joinpath("fixtures", filename).read_text(encoding="utf-8")
-        return validate_json(raw, schema)
-
+def request_json(schema: type[Model], messages: list[dict[str, str]]) -> Model:
     from openai import (
         APIConnectionError,
         APIResponseValidationError,
@@ -125,46 +103,3 @@ def _parse_chat_completion(response: object, schema: type[Model]) -> Model:
     if not raw:
         raise ResumeError("AI_OUTPUT_EMPTY", "AI 未返回 JSON 文本，请检查模型与端点兼容性。", 5)
     return validate_json(raw, schema)
-
-
-def extract_resume(text: str, *, mock: bool = False) -> Resume:
-    return _request(Resume, extract_messages({"resume_text": text}), mock=mock)
-
-
-def score_resume(
-    text: str,
-    jd: str,
-    *,
-    mock: bool = False,
-    include_evidence: bool = False,
-    document: ParsedDocument | None = None,
-) -> ScoreResult | DetailedScoreResult:
-    if include_evidence:
-        assessment = _request(
-            EvidenceScoreAssessment,
-            score_messages({"resume_text": text, "jd_text": jd}, include_evidence=True),
-            mock=mock,
-        )
-        source = (
-            files("resume_cli").joinpath("fixtures/evidence-resume.txt").read_text(encoding="utf-8")
-            if mock
-            else text
-        )
-        if mock:
-            document = ParsedDocument(
-                tuple(
-                    TextPage(index, page, "text")
-                    for index, page in enumerate(source.split("\f"), 1)
-                )
-            )
-            source = document.text
-            jd = (
-                files("resume_cli").joinpath("fixtures/evidence-jd.txt").read_text(encoding="utf-8")
-            )
-        return finalize_evidence_score(assessment, source, jd, document=document, mock=mock)
-    assessment = _request(
-        ScoreAssessment,
-        score_messages({"resume_text": text, "jd_text": jd}),
-        mock=mock,
-    )
-    return finalize_score(assessment)

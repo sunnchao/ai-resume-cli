@@ -230,16 +230,11 @@ OCR 引擎 / 依赖 / 语言包缺失、识别失败、超时或空结果均使�
 
 ```text
 src/resume_cli/
-  cli.py          # 命令入口、输出与错误
-  files.py        # PDF / JD 读取与文件保存
-  documents.py    # 页文本、物理页码与原文位置
-  ocr.py          # 可选 PDFium + Tesseract 本地识别
-  config.py       # 环境变量与 .env
-  ai.py           # API 请求、受控重试、mock
-  batch.py        # 顺序批处理、逐项结果、失败汇总
-  prompts.py      # 提示词版本与文档数据边界
-  schemas.py      # JSON 规则与本地总分
-  fixtures/       # 随 wheel 分发的固定 mock 数据
+  cli.py              # 命令入口、输出与错误
+  domain/             # JSON 契约、本地总分、证据定位、页文本
+  application/        # extract / score / batch 用例
+  adapters/           # PDF/JD、OCR、API、mock、.env、文件保存
+  fixtures/           # 随 wheel 分发的固定 mock 数据
 tests/            # 离线文件、Schema、HTTP、CLI 测试
 examples/         # 虚构 PDF / JD 与期望输出
 scripts/          # 样例生成、真实 API 冒烟、wheel / 二进制构建与校验

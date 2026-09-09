@@ -6,8 +6,10 @@ import openai
 import pytest
 from openai import OpenAI
 
-from resume_cli import ai
-from resume_cli.errors import ResumeError
+from resume_cli.adapters import ai as transport
+from resume_cli.adapters.config import Settings
+from resume_cli.application import resumes as ai
+from resume_cli.domain.errors import ResumeError
 
 
 def fixture(name="resume.json"):
@@ -50,7 +52,7 @@ def install_transport(monkeypatch):
     requests = []
     waits = []
     constructor_args = []
-    monkeypatch.setattr(ai.time, "sleep", waits.append)
+    monkeypatch.setattr(transport.time, "sleep", waits.append)
 
     def install(handler):
         def transport(request):
@@ -228,7 +230,7 @@ def test_mock_does_not_construct_client_or_load_config(monkeypatch):
         raise AssertionError("mock must not load configuration or call SDK")
 
     monkeypatch.setattr(openai, "OpenAI", forbidden)
-    monkeypatch.setattr(ai.Settings, "load", forbidden)
+    monkeypatch.setattr(Settings, "load", forbidden)
     assert ai.extract_resume("one", mock=True) == ai.extract_resume("two", mock=True)
     assert ai.score_resume("resume", "jd", mock=True).overall_score == 82
 

@@ -3,8 +3,8 @@ from importlib.resources import files
 
 import pytest
 
-from resume_cli.errors import ResumeError
-from resume_cli.schemas import (
+from resume_cli.domain.errors import ResumeError
+from resume_cli.domain.schemas import (
     DetailedScoreResult,
     EvidenceScoreAssessment,
     Resume,

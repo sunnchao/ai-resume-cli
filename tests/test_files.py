@@ -4,9 +4,10 @@ from pathlib import Path
 import pytest
 from pypdf import PdfReader, PdfWriter
 
-from resume_cli import files
-from resume_cli.errors import ResumeError
-from resume_cli.files import check_output_path, parse_pdf, read_jd, save_json
+from resume_cli.adapters import documents as files
+from resume_cli.adapters.documents import parse_pdf, read_jd
+from resume_cli.adapters.storage import check_output_path, save_json
+from resume_cli.domain.errors import ResumeError
 
 
 def test_pdf_page_order_and_non_ascii_path(make_pdf):

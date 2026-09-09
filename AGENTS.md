@@ -77,16 +77,11 @@ uv run python scripts/smoke_ai.py --evidence
 
 ```text
 src/resume_cli/
-  cli.py          # Typer 入口；成功 JSON 只写 stdout，诊断只写 stderr
-  files.py        # PDF / JD 读取、限额、原子保存
-  documents.py    # 页文本、物理页码、行号与字符区间
-  ocr.py          # 可选本地 PDFium + Tesseract；仅无文本页
-  config.py       # 只读 cwd/.env 与同名环境变量
-  ai.py           # Chat Completions、一次瞬时重试、mock
-  batch.py        # 显式路径、顺序、去重、失败隔离
-  prompts.py      # 提示词、数据边界、few-shot
-  schemas.py      # 严格 JSON、本地总分、证据校验
-  fixtures/       # 随 wheel 分发的固定 mock
+  cli.py              # Typer 入口；成功 JSON 只写 stdout，诊断只写 stderr
+  domain/             # 契约、本地算分、证据定位、页文本；无 I/O
+  application/        # extract / score / batch 用例
+  adapters/           # PDF/JD、OCR、Chat Completions、mock、.env、原子保存
+  fixtures/           # 随 wheel 分发的固定 mock
 tests/            # 离线测试；默认禁止真实网络
 examples/         # 虚构简历 / JD / 期望 JSON / corpus
 scripts/          # 样例生成、OCR 语言、冒烟、wheel / 二进制 / tag 发布打包与校验
@@ -102,7 +97,7 @@ docs/             # 迭代、验收、演示
 1. **默认兼容。** 无 `--evidence` 的 `score` 公开 JSON 不得新增必填字段。无 `--ocr` / `--layout` 时保持原文本提取路径。
 2. **Chat Completions。** 真实请求走 `POST /chat/completions` + `response_format=json_schema`（`strict: true`）。不要改回 Responses API，也不要在失败时自动改用 mock 或其他端点。
 3. **数据边界。** 简历和 JD 只出现在最后一条 `user` 消息。few-shot 是虚构样本，禁止把样本姓名、分数、经历套到当前文档。提示词改动后核对 `PROMPT_VERSION`。
-4. **本地算分。** 总分 = 四舍五入（技能 50% + 经验 30% + 教育 20%），在 `schemas.finalize_score` 计算。模型不得输出 `overall_score`。JD 无任何可识别要求时失败，不给出分数。
+4. **本地算分。** 总分 = 四舍五入（技能 50% + 经验 30% + 教育 20%），在 `domain.schemas.finalize_score` 计算。模型不得输出 `overall_score`。JD 无任何可识别要求时失败，不给出分数。
 5. **stdout / stderr。** 成功数据只在 stdout；MOCK 标记、进度、错误只在 stderr。错误不输出半成品 JSON，不回显 Key、原文或模型原始响应。
 6. **保存。** `--output` 拒绝覆盖已有目标。同目录临时文件 + 硬链接提交；不支持硬链接则明确失败，不要改成“先删再写”。
 7. **mock。** `--mock` 返回包内 fixture，与当前 PDF 内容无关。证据模式下 `evidence_basis` 必须是 `mock_fixture`，引文核对的是 fixture 文本，不是输入 PDF。
@@ -118,7 +113,7 @@ docs/             # 迭代、验收、演示
 - 格式与检查：Ruff，`line-length = 100`，规则 `E,F,I,UP,B`。提交前 `ruff check` 与 `ruff format --check` 必须通过。
 - 公开模型用 Pydantic v2 `strict=True, extra="forbid"`。缺失标量为 `null`，缺失列表为 `[]`；拒绝重复 JSON 键和非标准常量。
 - 用户可见失败用 `ResumeError(code, message, exit_code)`。消息用中文，短、可操作，且不包含私密输入。
-- 保持模块薄：CLI 不解析 PDF；`ai.py` 不读文件系统；OCR 失败不得 silently 退回空文本。
+- 保持模块薄：CLI 不解析 PDF；`adapters.ai` 不读文件系统；OCR 失败不得 silently 退回空文本。
 - 依赖加在 `pyproject.toml` 并用 `uv lock` 更新 `uv.lock`。ReportLab 只属于 dev group，不要变成运行时依赖。OCR 可选依赖放在 `[project.optional-dependencies] ocr`。
 - 测试默认离线。`tests/conftest.py` 禁止 `socket.connect`。需要 HTTP 时用 `httpx.MockTransport` 包住真实 OpenAI SDK，不要 mock 掉整个 SDK 调用形状。
 - 新增 CLI 标志必须有帮助文本、测试，以及 README 命令表更新。
