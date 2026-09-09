@@ -1,0 +1,19 @@
+{
+  "name": "陈晨",
+  "phone": null,
+  "email": "chen@example.com",
+  "city": "杭州",
+  "education": [
+    {
+      "school": "示例大学",
+      "major": "计算机科学",
+      "degree": "本科",
+      "graduation_time": "2024-06"
+    }
+  ],
+  "skills": [
+    "Python",
+    "React",
+    "PostgreSQL"
+  ]
+}

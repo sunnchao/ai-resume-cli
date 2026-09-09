@@ -1,0 +1,11 @@
+{
+  "overall_score": 82,
+  "skill_score": 88,
+  "experience_score": 80,
+  "education_score": 70,
+  "comment": "MOCK 固定演示：技能方面有 Python、React 与 PostgreSQL 项目；经验方面具备全栈实践，但简历未体现生产规模；教育方面为计算机科学本科。分数仅用于展示输出格式，与本次输入内容无关，不能作为实际招聘判断。",
+  "interview_questions": [
+    "请说明项目中你负责的功能及技术决策。",
+    "你如何部署服务、排查故障并评估线上性能？"
+  ]
+}

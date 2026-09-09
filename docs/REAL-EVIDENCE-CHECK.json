@@ -1,0 +1,21 @@
+{
+  "model": "gemini-3.8-flash",
+  "prompt_version": "1.2",
+  "samples": [
+    {
+      "sample": "resume.pdf",
+      "status": "passed on explicit retry",
+      "initial_error": "HTTP 400",
+      "quote_validation": "passed"
+    },
+    {
+      "sample": "resume-alt.pdf",
+      "status": "failed",
+      "code": "AI_REQUEST_FAILED",
+      "message": "AI 请求失败（HTTP 400），请检查模型、端点、配额或稍后重试。",
+      "diagnostic": "Provider API error: bad response status code "
+    }
+  ],
+  "date": "2026-09-09",
+  "code_version": "0.5.0"
+}

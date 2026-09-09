@@ -1,0 +1,69 @@
+{
+  "synthetic": true,
+  "samples": [
+    {
+      "file": "multi-page.pdf",
+      "pages": 3,
+      "checks": [
+        "PAGE_ONE",
+        "PAGE_TWO",
+        "PAGE_THREE"
+      ]
+    },
+    {
+      "file": "two-column.pdf",
+      "pages": 1,
+      "checks": [
+        "Python",
+        "React",
+        "PostgreSQL",
+        "TypeScript"
+      ]
+    },
+    {
+      "file": "table.pdf",
+      "pages": 1,
+      "checks": [
+        "Python",
+        "React",
+        "Order API",
+        "Admin UI"
+      ]
+    },
+    {
+      "file": "scan-en.pdf",
+      "pages": 1,
+      "ocr": "eng",
+      "checks": [
+        "Python",
+        "React",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "file": "scan-zh.pdf",
+      "pages": 1,
+      "ocr": "eng+chi_sim",
+      "checks": [
+        "Python",
+        "React",
+        "计算机"
+      ]
+    },
+    {
+      "file": "mixed.pdf",
+      "pages": 2,
+      "ocr": "eng",
+      "checks": [
+        "NATIVE_PAGE_ONE",
+        "Python"
+      ]
+    },
+    {
+      "file": "blank-page.pdf",
+      "pages": 2,
+      "expected_error": "OCR_EMPTY"
+    }
+  ],
+  "check_normalization": "ignore_whitespace"
+}

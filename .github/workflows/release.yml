@@ -1,0 +1,143 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHONUTF8: "1"
+  UV_NO_PROGRESS: "1"
+  UV_PYTHON: "3.11"
+
+jobs:
+  meta:
+    name: Verify version
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - id: meta
+        env:
+          REF: ${{ github.ref }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          VERSION="$(python3 scripts/release_meta.py version)"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "package version ${VERSION}"
+          if [[ "${REF}" == refs/tags/* ]]; then
+            python3 scripts/release_meta.py check-tag "${REF_NAME}"
+            echo "tag=${REF_NAME}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=" >> "$GITHUB_OUTPUT"
+            echo "non-tag ref; skip tag/version check"
+          fi
+
+  python-dist:
+    name: Python wheel and sdist
+    needs: meta
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff # v6
+        with:
+          enable-cache: true
+      - run: uv python install
+      - run: uv sync --frozen --group dev
+      - run: uv build
+      - run: uv run python scripts/release_meta.py collect-python --dist dist --dest dist/release
+      - run: uv run python scripts/verify_wheel.py dist/release/ai_resume_cli-${{ needs.meta.outputs.version }}-py3-none-any.whl
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: python-dist
+          path: dist/release/*
+          if-no-files-found: error
+
+  binary:
+    name: Binary / ${{ matrix.os }}
+    needs: meta
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff # v6
+        with:
+          enable-cache: true
+      - run: uv python install
+      - run: uv sync --frozen --group dev --group binary
+      - run: uv run python scripts/build_binary.py
+      - run: uv run python scripts/verify_binary.py
+      - run: uv run python scripts/release_meta.py archive --source dist/binary/resume-cli --dest dist/release
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: binary-${{ runner.os }}
+          path: dist/release/*
+          if-no-files-found: error
+
+  publish:
+    name: GitHub Release
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [meta, python-dist, binary]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          path: dist/release
+          merge-multiple: true
+      - run: python3 scripts/release_meta.py checksums dist/release
+      - run: python3 scripts/release_meta.py notes --output dist/release-notes.md
+      - shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.meta.outputs.tag }}
+          VERSION: ${{ needs.meta.outputs.version }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=(dist/release/*)
+          required=(
+            "dist/release/ai_resume_cli-${VERSION}-py3-none-any.whl"
+            "dist/release/ai_resume_cli-${VERSION}.tar.gz"
+            "dist/release/SHA256SUMS"
+          )
+          for path in "${required[@]}"; do
+            if [[ ! -f "${path}" ]]; then
+              echo "missing ${path}" >&2
+              ls -la dist/release >&2
+              exit 1
+            fi
+          done
+          archives=(dist/release/resume-cli-"${VERSION}"-*.tar.gz dist/release/resume-cli-"${VERSION}"-*.zip)
+          if [[ "${#archives[@]}" -lt 3 ]]; then
+            echo "expected three platform binary archives" >&2
+            ls -la dist/release >&2
+            exit 1
+          fi
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            gh release upload "${TAG}" "${files[@]}" --clobber
+          else
+            gh release create "${TAG}" "${files[@]}" \
+              --title "ai-resume-cli ${VERSION}" \
+              --notes-file dist/release-notes.md
+          fi

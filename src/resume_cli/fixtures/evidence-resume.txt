@@ -1,0 +1,5 @@
+MOCK 固定虚构简历，只用于演示证据格式。
+技能：Python、React、PostgreSQL
+使用 Python 编写 API，React 构建任务列表和表单。
+示例大学 | 计算机科学 | 本科
+未提供生产规模及大模型 API 项目经历。

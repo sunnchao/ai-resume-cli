@@ -1,0 +1,65 @@
+[project]
+name = "ai-resume-cli"
+version = "0.6.0"
+description = "PDF resume extraction and JD matching from the terminal"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "openai>=2.0,<3",
+  "pydantic>=2.10,<3",
+  "pypdf>=6.0,<7",
+  "python-dotenv>=1.0,<2",
+  "typer>=0.16,<1",
+]
+
+[project.optional-dependencies]
+ocr = ["pypdfium2>=4.30,<6", "pillow>=11,<13"]
+
+[project.scripts]
+resume-cli = "resume_cli.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/resume_cli"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src", "/tests", "/docs", "/scripts", "/output/pdf",
+  "/examples/resume.pdf", "/examples/resume-alt.pdf", "/examples/jd.txt",
+  "/examples/expected-*.json", "/README.md", "/CHANGELOG.md", "/AGENTS.md",
+  "/examples/corpus", "/.github",
+  "/pyproject.toml", "/uv.lock", "/.env.example", "/.python-version", "/.gitignore",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8,<10",
+  "pytest-cov>=6,<8",
+  "reportlab>=4,<5",
+  "ruff>=0.12,<1",
+]
+binary = [
+  "pyinstaller>=6.3,<7",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = ["ocr: requires installed OCR extra, Tesseract and eng+chi_sim language data"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.coverage.run]
+source = ["resume_cli"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true

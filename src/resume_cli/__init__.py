@@ -1,0 +1,3 @@
+"""A small, validated PDF resume CLI."""
+
+__version__ = "0.6.0"
