@@ -254,7 +254,7 @@ uv build
 
 ### 独立可执行文件
 
-用 PyInstaller 为**当前操作系统和 CPU**打出命令行程序，不需要目标机器安装 Python。不交叉编译。默认是目录分发（`--onedir`）：启动时立即在 stderr 打印 `resume-cli 启动中…`，不先解压整个包。单文件（`--onefile`）每次启动都要解压，会明显变慢，只在需要拷贝单个文件时使用。
+用 PyInstaller 为**当前操作系统和 CPU**打出命令行程序，不需要目标机器安装 Python。不交叉编译。默认是目录分发（`--onedir`）：启动时立即在 stderr 打印 `resume-cli starting...`，不先解压整个包。单文件（`--onefile`）每次启动都要解压，会明显变慢，只在需要拷贝单个文件时使用。
 
 ```bash
 uv sync --frozen --group dev --group binary

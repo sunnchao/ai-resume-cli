@@ -11,6 +11,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+BOOT_NOTICE = "resume-cli starting..."
 
 
 def default_binary() -> Path:
@@ -18,6 +19,29 @@ def default_binary() -> Path:
     onedir = ROOT / "dist" / "binary" / "resume-cli" / name
     onefile = ROOT / "dist" / "binary" / name
     return onedir if onedir.is_file() else onefile
+
+
+def decode_output(data: bytes | None) -> str:
+    """Windows frozen consoles may emit OEM/ANSI bytes, not UTF-8."""
+    if not data:
+        return ""
+    for encoding in ("utf-8", "utf-8-sig", "cp1252", "cp437", "mbcs", "latin-1"):
+        try:
+            return data.decode(encoding)
+        except (LookupError, UnicodeDecodeError):
+            continue
+    return data.decode("utf-8", errors="replace")
+
+
+def run_binary(binary: Path, command: list[str], cwd: str) -> subprocess.CompletedProcess[str]:
+    result = subprocess.run(
+        [str(binary), *command],
+        cwd=cwd,
+        capture_output=True,
+    )
+    result.stdout = decode_output(result.stdout)
+    result.stderr = decode_output(result.stderr)
+    return result
 
 
 def main() -> int:
@@ -46,13 +70,7 @@ def main() -> int:
     ]
     with tempfile.TemporaryDirectory(prefix="resume-binary-") as directory:
         for command, expected in cases:
-            result = subprocess.run(
-                [str(binary), *command],
-                cwd=directory,
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-            )
+            result = run_binary(binary, command, directory)
             if result.returncode != expected:
                 sys.stderr.write(result.stderr)
                 print(
@@ -64,7 +82,7 @@ def main() -> int:
                 if result.stdout.strip() != "0.6.0":
                     print(f"版本不符：{result.stdout!r}", file=sys.stderr)
                     return 1
-                if "启动中" not in result.stderr:
+                if BOOT_NOTICE not in result.stderr:
                     print("冻结程序启动时应立即在 stderr 提示。", file=sys.stderr)
                     return 1
             elif command[0] != "parse" or "--pages" in command:

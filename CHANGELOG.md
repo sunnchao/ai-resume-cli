@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Windows 冻结二进制校验改为按字节读取 stderr，并接受控制台代码页；冻结启动提示改为 ASCII `resume-cli starting...`，避免 GitHub Windows runner 按 UTF-8 解码失败。
 - 内部模块按 `domain` / `application` / `adapters` 分层；CLI 入口仍是 `resume_cli.cli:main`。公开 JSON、命令与错误码不变。
 - 增加当前平台独立二进制打包：`scripts/build_binary.py` / `scripts/build_binary.sh`。默认目录分发到 `dist/binary/resume-cli/`，启动时立即在 stderr 提示，避免单文件每次解压的长等待；`--onefile` 仍可打单文件。不含 OCR extra。`scripts/verify_binary.py` 用虚构样例校验 parse / mock extract / evidence score / batch。
 - 增加 tag 触发的 GitHub Release 工作流：推送 `vX.Y.Z`（须与 `pyproject.toml` / `__version__` 一致）后构建 wheel / sdist，并在 Ubuntu / macOS / Windows runner 本机架构打包独立二进制；校验后上传到 GitHub Release，附 SHA256SUMS。不交叉编译，不含 OCR extra，也不把二进制提交进仓库。手动 `workflow_dispatch` 只构建产物、不创建 Release。

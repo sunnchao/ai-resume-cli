@@ -27,3 +27,14 @@ def test_binary_verify_script_prefers_onedir():
     module = _load("verify_binary.py")
     assert module.ROOT == ROOT
     assert callable(module.default_binary)
+    assert module.BOOT_NOTICE == "resume-cli starting..."
+
+
+def test_binary_verify_decodes_windows_console_bytes():
+    module = _load("verify_binary.py")
+    # GitHub Windows runners emitted 0x85 (cp1252 ellipsis) on frozen stderr.
+    assert module.decode_output(None) == ""
+    assert module.decode_output(b"") == ""
+    assert module.decode_output(b"resume-cli starting...") == "resume-cli starting..."
+    assert "启动中" in module.decode_output("resume-cli 启动中…".encode())
+    assert module.decode_output(b"resume-cli \x85") == "resume-cli \u2026"

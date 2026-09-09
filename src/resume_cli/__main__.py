@@ -3,7 +3,7 @@ import sys
 
 def _boot_notice() -> None:
     if getattr(sys, "frozen", False):
-        print("resume-cli 启动中…", file=sys.stderr, flush=True)
+        print("resume-cli starting...", file=sys.stderr, flush=True)
 
 
 def _run() -> None:
