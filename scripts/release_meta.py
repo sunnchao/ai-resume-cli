@@ -147,8 +147,8 @@ def changelog_notes(root: Path, version: str) -> str:
         body = body.strip()
     summary = (
         "由版本 tag 触发 GitHub Actions 构建。Python 包可在 3.11+ 安装；"
-        "独立二进制按 runner 本机操作系统和 CPU 打包，不交叉编译，"
-        "默认目录分发，不含 OCR extra，也不内嵌 Tesseract。"
+        "独立二进制按 Ubuntu / macOS runner 本机操作系统和 CPU 打包，不交叉编译，"
+        "默认目录分发，不含 Windows 二进制和 OCR extra，也不内嵌 Tesseract。"
     )
     return f"# ai-resume-cli {version}\n\n{summary}\n\n{body}\n"
 

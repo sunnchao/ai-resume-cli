@@ -13,7 +13,7 @@
 | T27 | 多平台 CI 配置 | 三种 OS × 三个 Python 版本的核心测试；三种 OS 的 OCR 作业；actionlint | 已完成配置与语法校验 |
 | T28 | 多平台实测 | macOS Python 3.11 全量 / 3.13 核心；Linux Python 3.11 容器全量 | 已完成本机与容器验证 |
 | T29 | GitHub 远程矩阵运行 | 需要将仓库推送到已配置 GitHub 远程 | 未运行：本地没有 Git 远程地址 |
-| T30 | 版本 tag 发布构建 | 推送 `vX.Y.Z` 构建 Python 包与三平台本机二进制并上传 GitHub Release | 已完成工作流配置；远程 tag 尚未推送 |
+| T30 | 版本 tag 发布构建 | 推送 `vX.Y.Z` 构建 Python 包与 Linux / macOS 本机二进制并上传 GitHub Release | 已完成工作流配置；远程 tag 尚未推送 |
 
 ## 证据定位契约
 

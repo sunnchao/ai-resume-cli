@@ -76,3 +76,5 @@ def test_archive_checksums_and_notes(tmp_path):
     notes = module.changelog_notes(ROOT, "0.6.0")
     assert notes.startswith("# ai-resume-cli 0.6.0")
     assert "PDF 解析保留页码" in notes
+    assert "不含 Windows 二进制" in notes
+    assert "Ubuntu / macOS" in notes

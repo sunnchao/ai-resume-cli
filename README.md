@@ -276,10 +276,10 @@ uv run python scripts/verify_binary.py
 推送符合 `vX.Y.Z` 的 Git tag 会触发 [Release 工作流](.github/workflows/release.yml)。tag 必须与 `pyproject.toml` 和 `src/resume_cli/__init__.py` 的版本一致，例如当前代码是 `0.6.0` 时使用 `v0.6.0`。工作流会：
 
 1. 构建并校验 `ai_resume_cli-<version>-py3-none-any.whl` 与 sdist。
-2. 在 Ubuntu / macOS / Windows runner 上用 PyInstaller 打当前架构的目录分发二进制，再打成 `resume-cli-<version>-<os>-<arch>.tar.gz` 或 `.zip`。
-3. 用虚构样例校验二进制后，把 Python 包、三个平台压缩包和 `SHA256SUMS` 上传到同名 GitHub Release。
+2. 在 Ubuntu / macOS runner 上用 PyInstaller 打当前架构的目录分发二进制，再打成 `resume-cli-<version>-<os>-<arch>.tar.gz`。
+3. 用虚构样例校验二进制后，把 Python 包、Linux / macOS 压缩包和 `SHA256SUMS` 上传到同名 GitHub Release，供下载。
 
-独立二进制仍不交叉编译、不含 OCR extra、不内嵌 Tesseract。GitHub-hosted `macos-latest` 当前是 arm64，`ubuntu-latest` / `windows-latest` 当前是 x86_64；不要把某一 runner 的产物写成其他 CPU 已验证。手动运行该工作流只构建并上传 Actions artifact，不会创建 GitHub Release。尚未推送远程仓库时，不要把本机结果写成 GitHub Release 已发布。
+独立二进制仍不交叉编译、不含 OCR extra、不内嵌 Tesseract，也不构建 Windows 二进制。GitHub-hosted `macos-latest` 当前是 arm64，`ubuntu-latest` 当前是 x86_64；不要把某一 runner 的产物写成其他 CPU 已验证。手动运行该工作流只构建并上传 Actions artifact，不会创建 GitHub Release。尚未实际创建 Release 时，不要把本机结果写成 GitHub Release 已发布。
 
 ```bash
 git tag v0.6.0

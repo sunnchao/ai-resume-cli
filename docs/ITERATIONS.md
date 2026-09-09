@@ -49,7 +49,7 @@
 | T27 | 0.6 | CI 多平台矩阵 | 9 核心 + 3 OCR + 1 工作流校验作业，actionlint 通过 | 已完成配置 |
 | T28 | 0.6 | 本机和 Linux 实测 | macOS / Linux 各 151 项、96% 覆盖；macOS 3.13 核心 147 项 | 已完成 |
 | T29 | 0.6 | GitHub 远程 CI 执行 | 当前无 Git 远程地址，Windows 和远程矩阵尚未运行 | 待远程配置后执行 |
-| T30 | 0.6 | 版本 tag 触发构建与发布产物 | 推送 `vX.Y.Z` 后构建 wheel / sdist / 三平台本机二进制，校验后上传 GitHub Release | 已完成配置；远程执行待推送 tag |
+| T30 | 0.6 | 版本 tag 触发构建与发布产物 | 推送 `vX.Y.Z` 后构建 wheel / sdist / Linux 与 macOS 本机二进制，校验后上传 GitHub Release | 已完成配置；远程执行待推送 tag |
 
 ## 实施决策
 
