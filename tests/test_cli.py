@@ -8,6 +8,18 @@ from resume_cli import cli
 from resume_cli.cli import app
 from resume_cli.domain.errors import ResumeError
 
+
+class _LegacyStream:
+    encoding = "cp1252"
+
+    def __init__(self) -> None:
+        self.calls: list[dict[str, str]] = []
+
+    def reconfigure(self, **kwargs: str) -> None:
+        self.calls.append(kwargs)
+        self.encoding = kwargs.get("encoding", self.encoding)
+
+
 runner = CliRunner()
 PROJECT = Path(__file__).resolve().parents[1]
 
@@ -23,6 +35,32 @@ def test_version():
     result = runner.invoke(app, ["--version"])
     assert result.exit_code == 0
     assert result.stdout.strip() == "0.6.0"
+
+
+def test_configure_stdio_switches_legacy_console_encoding(monkeypatch):
+    stdout = _LegacyStream()
+    stderr = _LegacyStream()
+    monkeypatch.setattr(cli.sys, "stdout", stdout)
+    monkeypatch.setattr(cli.sys, "stderr", stderr)
+    cli._configure_stdio()
+    assert stdout.encoding == "utf-8"
+    assert stderr.encoding == "utf-8"
+    assert stdout.calls == [{"encoding": "utf-8", "errors": "replace"}]
+
+
+def test_configure_stdio_skips_utf8_and_bare_streams(monkeypatch):
+    class Utf8:
+        encoding = "utf-8"
+
+        def reconfigure(self, **kwargs):
+            raise AssertionError("UTF-8 streams should be left alone")
+
+    class Bare:
+        encoding = "cp1252"
+
+    monkeypatch.setattr(cli.sys, "stdout", Utf8())
+    monkeypatch.setattr(cli.sys, "stderr", Bare())
+    cli._configure_stdio()
 
 
 def test_parse_and_mock_full_flow(make_pdf, jd_path, tmp_path):

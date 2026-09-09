@@ -1,6 +1,7 @@
 """Thin command layer: successful data on stdout, diagnostics on stderr."""
 
 import json
+import sys
 from pathlib import Path
 from typing import Annotated
 
@@ -188,7 +189,25 @@ def run_batch(*args, **kwargs):
     return impl(*args, **kwargs)
 
 
+def _configure_stdio() -> None:
+    """Windows consoles and frozen pipes often start as cp1252; JSON and resumes are UTF-8."""
+    for stream in (sys.stdout, sys.stderr):
+        if stream is None:
+            continue
+        encoding = (getattr(stream, "encoding", None) or "").lower().replace("-", "")
+        if encoding in {"utf8", "utf8sig"}:
+            continue
+        reconfigure = getattr(stream, "reconfigure", None)
+        if not callable(reconfigure):
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError, AttributeError):
+            continue
+
+
 def main() -> None:
+    _configure_stdio()
     app()
 
 

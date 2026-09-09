@@ -34,10 +34,14 @@ def decode_output(data: bytes | None) -> str:
 
 
 def run_binary(binary: Path, command: list[str], cwd: str) -> subprocess.CompletedProcess[str]:
+    env = os.environ.copy()
+    env.setdefault("PYTHONUTF8", "1")
+    env.setdefault("PYTHONIOENCODING", "utf-8")
     result = subprocess.run(
         [str(binary), *command],
         cwd=cwd,
         capture_output=True,
+        env=env,
     )
     result.stdout = decode_output(result.stdout)
     result.stderr = decode_output(result.stderr)
