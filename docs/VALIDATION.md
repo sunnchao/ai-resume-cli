@@ -14,7 +14,7 @@
 | 工作流语法 | actionlint 1.7.12 通过，包含 GitHub 上下文与 shell 检查 |
 | 样例视觉检查 | 7 份 PDF 共 11 页已渲染检查；空白负例为故意空白 |
 | GitHub Windows / Linux / macOS 矩阵 | 核心 CI 矩阵是否全绿不以本机结果代替 |
-| GitHub Release / 版本 tag 构建 | 已配置 `.github/workflows/release.yml`。本地 `actionlint` 1.7.12 通过；`tests/test_release_meta.py` 覆盖 tag 必须为 `vX.Y.Z`、与包装版本一致、平台压缩包命名和 SHA256SUMS。核心作业 `pytest -m "not ocr"` 154 passed。Release 二进制矩阵现为 Ubuntu / macOS；Windows 二进制不再构建。此前 `workflow_dispatch` run [34356476374](https://github.com/sunnchao/ai-resume-cli/actions/runs/34356476374) 未创建 GitHub Release |
+| GitHub Release / 版本 tag 构建 | tag `v0.6.0` 触发 run [34357801632](https://github.com/sunnchao/ai-resume-cli/actions/runs/34357801632) 成功，并创建 [GitHub Release v0.6.0](https://github.com/sunnchao/ai-resume-cli/releases/tag/v0.6.0)。上传 wheel、sdist、`resume-cli-0.6.0-linux-x86_64.tar.gz`、`resume-cli-0.6.0-macos-arm64.tar.gz` 与 `SHA256SUMS`。无 Windows 二进制 |
 | macOS arm64 独立二进制 | 默认改为目录分发 `dist/binary/resume-cli/resume-cli`，启动立即在 stderr 提示；`verify_binary.py` 覆盖 --version / parse / extract --mock / score --evidence --mock / batch |
 
 Linux 实测使用 Docker 官方 `python:3.11-slim` 镜像（此次解析 digest：`sha256:9534e5a8e315485d4061ed659af0fd78a284c015f9b73661b41d6bab25604534`），仅挂载构建后的源码包与固定 OCR 语言数据，没有挂载 .env 或其他简历。

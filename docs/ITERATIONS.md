@@ -49,7 +49,7 @@
 | T27 | 0.6 | CI 多平台矩阵 | 9 核心 + 3 OCR + 1 工作流校验作业，actionlint 通过 | 已完成配置 |
 | T28 | 0.6 | 本机和 Linux 实测 | macOS / Linux 各 151 项、96% 覆盖；macOS 3.13 核心 147 项 | 已完成 |
 | T29 | 0.6 | GitHub 远程 CI 执行 | 当前无 Git 远程地址，Windows 和远程矩阵尚未运行 | 待远程配置后执行 |
-| T30 | 0.6 | 版本 tag 触发构建与发布产物 | 推送 `vX.Y.Z` 后构建 wheel / sdist / Linux 与 macOS 本机二进制，校验后上传 GitHub Release | 已完成配置；远程执行待推送 tag |
+| T30 | 0.6 | 版本 tag 触发构建与发布产物 | 推送 `vX.Y.Z` 后构建 wheel / sdist / Linux 与 macOS 本机二进制，校验后上传 GitHub Release | 已完成：`v0.6.0` Release 已发布 |
 
 ## 实施决策
 
@@ -76,7 +76,7 @@
 ## 下一轮任务
 
 1. 在用户 GitHub 远程配置后触发 CI，记录 Windows 与所有矩阵的实际运行结果。
-2. 推送与包装版本一致的 `vX.Y.Z` tag，确认 Release 工作流实际构建并上传产物；未运行前不记录“已发布”。
+2. 后续版本继续推送与包装版本一致的 `vX.Y.Z` tag；`v0.6.0` 已发布 Linux / macOS 二进制，不含 Windows。
 3. 批量增加断点恢复、仅重试失败文件和受控并发。
 4. OCR 增加混合页面区域识别、倾斜校正与低清样例，证据增加坐标框定位。
 5. 自定义权重继续作为后续候选；当前端点 HTTP 400 需结合服务方信息定位。
